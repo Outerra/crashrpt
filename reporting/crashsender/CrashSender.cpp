@@ -40,6 +40,17 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int /*nCmdShow*/ = SW_SHOWDEFAULT)
     if(argc!=2)
         return 1; // No arguments passed, exit.
 
+    if(argv[1][0] == '-') {
+        LPCWSTR str = _T("Unknown error");
+        if(argv[1][1] == '1')
+            str = _T("Graphics card drivers crashed during the initialization of OpenGL.\n\nThis usually means that your Catalyst installation is corrupted, please do a clean reinstall of your Catalyst drivers. See http://help.outerra.com for a list of other possible causes and solutions.");
+        else if(argv[1][1] == '2')
+            str = _T("Graphics card drivers crashed during the initialization of OpenGL.\n\nPlease see http://help.outerra.com for a list of possible causes and solutions.");
+
+        ::MessageBox(0, str, _T("Fatal Error"), MB_OK | MB_ICONEXCLAMATION);
+        return 0;
+    }
+
 	if(_tcscmp(argv[1], _T("/terminate"))==0)
 	{
 		// User wants us to find and terminate all instances of CrashSender.exe

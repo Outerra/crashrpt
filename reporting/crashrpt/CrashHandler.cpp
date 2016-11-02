@@ -266,10 +266,10 @@ int CCrashHandler::Init(
     CString sCrashRptModule;
 #ifndef CRASHRPT_LIB
 #ifdef _DEBUG
-    sCrashRptModule.Format(_T("CrashRpt%dd.dll"), CRASHRPT_VER);
+    sCrashRptModule = _T("CrashRptd.dll");//.Format(_T("CrashRpt%dd.dll"), CRASHRPT_VER);
     pszCrashRptModule = sCrashRptModule.GetBuffer(0);
 #else
-    sCrashRptModule.Format(_T("CrashRpt%d.dll"), CRASHRPT_VER);
+    sCrashRptModule = _T("CrashRpt.dll");//.Format(_T("CrashRpt%d.dll"), CRASHRPT_VER);
     pszCrashRptModule = sCrashRptModule.GetBuffer(0);
 #endif //_DEBUG
 #else //!CRASHRPT_LIB
@@ -292,9 +292,9 @@ int CCrashHandler::Init(
     CString sCrashSenderName;
 
 #ifdef _DEBUG
-    sCrashSenderName.Format(_T("CrashSender%dd.exe"), CRASHRPT_VER);
+    sCrashSenderName = _T("CrashSenderd.exe");//.Format(_T("CrashSender%dd.exe"), CRASHRPT_VER);
 #else
-    sCrashSenderName.Format(_T("CrashSender%d.exe"), CRASHRPT_VER);
+    sCrashSenderName = _T("CrashSender.exe");//.Format(_T("CrashSender%d.exe"), CRASHRPT_VER);
 #endif //_DEBUG
 
     // Check that CrashSender.exe file exists
@@ -1335,7 +1335,8 @@ int CCrashHandler::GenerateErrorReport(
     }
 	    
     // Let client know about the crash via the crash callback function. 
-    if (m_lpfnCallback!=NULL && m_lpfnCallback(NULL)==FALSE)
+    int rv=1;
+    if (m_lpfnCallback!=NULL && (rv=m_lpfnCallback(NULL))==FALSE)
     {
 		// User has canceled error report generation!
 
@@ -1345,6 +1346,11 @@ int CCrashHandler::GenerateErrorReport(
         crSetErrorMsg(_T("The operation was cancelled by client."));
         return 2;
     }
+
+    if(rv==2)
+        m_sCrashGUID = _T("-1");
+    else if(rv==3)
+        m_sCrashGUID = _T("-2");
 
 	// New-style callback
 	if(CR_CB_CANCEL==CallBack(CR_CB_STAGE_PREPARE, pExceptionInfo))
@@ -1369,7 +1375,7 @@ int CCrashHandler::GenerateErrorReport(
 	if(!m_bAddVideo || (m_bAddVideo && !IsSenderProcessAlive())) 
 	{
 		// Run new CrashSender.exe process
-		result = LaunchCrashSender(m_sCrashGUID, TRUE, &pExceptionInfo->hSenderProcess);
+		result = LaunchCrashSender(m_sCrashGUID, rv==1, &pExceptionInfo->hSenderProcess);
 	}
 	else // we are recording video
 	{		
