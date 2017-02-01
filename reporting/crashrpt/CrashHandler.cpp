@@ -1695,12 +1695,17 @@ int CCrashHandler::PerCrashInit()
 		m_pCrashDesc = NULL;
 	}
 
-	// Pack configuration info into shared memory.
-    // It will be passed to CrashSender.exe later.
-    m_pCrashDesc = PackCrashInfoIntoSharedMem(&m_SharedMem, FALSE);
+    Repack();
 	
 	// OK
 	return 0;
+}
+
+void CCrashHandler::Repack()
+{
+    // Pack configuration info into shared memory.
+    // It will be passed to CrashSender.exe later.
+    m_pCrashDesc = PackCrashInfoIntoSharedMem(&m_SharedMem, FALSE);
 }
 
 int CCrashHandler::CallBack(int nStage, CR_EXCEPTION_INFO* pExInfo)

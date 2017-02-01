@@ -423,7 +423,6 @@ crSetCrashCallbackW(
 			 LPVOID lpParam
              );
 
-
 CRASHRPTAPI(int)
 crSetEmailSubjectW(
     LPCWSTR pszSubject
