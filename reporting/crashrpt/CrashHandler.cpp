@@ -1353,16 +1353,18 @@ int CCrashHandler::GenerateErrorReport(
         m_sCrashGUID = _T("-2");
 
 	// New-style callback
-	if(CR_CB_CANCEL==CallBack(CR_CB_STAGE_PREPARE, pExceptionInfo))
-	{
-		// User has canceled error report generation!
+    if (CR_CB_CANCEL == CallBack(CR_CB_STAGE_PREPARE, pExceptionInfo))
+    {
+        // User has canceled error report generation!
 
-		// Prepare for the next crash
-		PerCrashInit();
+        // Prepare for the next crash
+        PerCrashInit();
 
         crSetErrorMsg(_T("The operation was cancelled by client."));
         return 2;
-    }	
+    }
+
+    Repack();
 
     // Start the CrashSender.exe process which will take the dekstop screenshot, 
     // copy user-specified files to the error report folder, create minidump, 

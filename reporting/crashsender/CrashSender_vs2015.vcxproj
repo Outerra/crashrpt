@@ -157,7 +157,7 @@
       <ProxyFileName>CrashSender_p.c</ProxyFileName>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)thirdparty\libogg\include;$(SolutionDir)thirdparty\libtheora\include;$(SolutionDir)reporting\crashrpt;$(SolutionDir)thirdparty\tinyxml;$(SolutionDir)thirdparty\zlib;$(SolutionDir)thirdparty\minizip;$(SolutionDir)include;$(SolutionDir)thirdparty\libpng;$(SolutionDir)thirdparty\wtl;$(SolutionDir)thirdparty\dbghelp\include;$(SolutionDir)thirdparty\jpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)thirdparty\libtheora\include;$(SolutionDir)thirdparty\libogg\include;$(SolutionDir)reporting\crashrpt;$(SolutionDir)thirdparty\tinyxml;$(SolutionDir)thirdparty\zlib;$(SolutionDir)thirdparty\minizip;$(SolutionDir)include;$(SolutionDir)thirdparty\libpng;$(SolutionDir)thirdparty\wtl;$(SolutionDir)thirdparty\dbghelp\include;$(SolutionDir)thirdparty\jpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;STRICT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -184,6 +184,8 @@
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(SolutionDir)lang_files\crashrpt_lang_EN.ini" "$(OutDir)\crashrpt_lang.ini"</Command>
@@ -222,11 +224,13 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>libtheora.lib;libogg.lib;tinyxml.lib;jpeg.lib;psapi.lib;zlib.lib;libpng.lib;minizip.lib;WS2_32.lib;Dnsapi.lib;wininet.lib;Rpcrt4.lib;Gdi32.lib;shell32.lib;Comdlg32.lib;minizip.lib;version.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\$(Platform);$(SolutionDir)thirdparty\lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(SolutionDir)lang_files\crashrpt_lang_EN.ini" "$(OutDir)\crashrpt_lang.ini"</Command>
@@ -245,7 +249,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>libtheorad.lib;liboggd.lib;jpegd.lib;tinyxmld.lib;zlibd.lib;minizipd.lib;WS2_32.lib;Dnsapi.lib;wininet.lib;Rpcrt4.lib;Gdi32.lib;shell32.lib;Comdlg32.lib;version.lib;libpngd.lib;psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\$(Platform);$(SolutionDir)thirdparty\lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
