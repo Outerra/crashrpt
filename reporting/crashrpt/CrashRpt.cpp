@@ -393,7 +393,7 @@ crSetEmailSubjectW(
         return 1; // No handler installed for current process?
     }
 
-    pCrashHandler->m_sEmailSubject = pszSubject;
+    pCrashHandler->UpdateEmailSubject(pszSubject);
 
     return 0;
 }
@@ -418,7 +418,7 @@ crSetEmailSubjectA(
 
     LPCWSTR pwszSubject = strconv.a2w(pszSubject);
 
-    pCrashHandler->m_sEmailSubject = pwszSubject;
+    pCrashHandler->UpdateEmailSubject(pwszSubject);
 
     return 0;
 }

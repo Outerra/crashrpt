@@ -1364,7 +1364,7 @@ int CCrashHandler::GenerateErrorReport(
         return 2;
     }
 
-    Repack();
+    //Repack();
 
     // Start the CrashSender.exe process which will take the dekstop screenshot, 
     // copy user-specified files to the error report folder, create minidump, 
@@ -1708,6 +1708,14 @@ void CCrashHandler::Repack()
     // Pack configuration info into shared memory.
     // It will be passed to CrashSender.exe later.
     m_pCrashDesc = PackCrashInfoIntoSharedMem(&m_SharedMem, FALSE);
+}
+
+void CCrashHandler::UpdateEmailSubject(LPCWSTR pszSubject)
+{
+    m_sEmailSubject = pszSubject;
+
+    if (m_pTmpCrashDesc)
+        m_pTmpCrashDesc->m_dwEmailSubjectOffs = PackString(m_sEmailSubject);
 }
 
 int CCrashHandler::CallBack(int nStage, CR_EXCEPTION_INFO* pExInfo)

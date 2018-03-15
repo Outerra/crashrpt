@@ -234,6 +234,9 @@ public:
     // Pack configuration info into shared memory.
     void Repack();
 
+    // Update in shared memory
+    void UpdateEmailSubject(LPCWSTR pszSubject);
+
     // Acqure exclusive access to this crash handler.
     void CrashLock(BOOL bLock);
 
