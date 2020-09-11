@@ -1,4 +1,4 @@
-/************************************************************************************* 
+/*************************************************************************************
 This file is a part of CrashRpt library.
 Copyright (c) 2003-2013 The CrashRpt project authors. All Rights Reserved.
 
@@ -9,7 +9,7 @@ be found in the Authors.txt file in the root of the source tree.
 ***************************************************************************************/
 
 // File: CrashSender.cpp
-// Description: Entry point to the application. 
+// Description: Entry point to the application.
 // Authors: zexspectrum
 // Date: 2010
 
@@ -24,7 +24,7 @@ be found in the Authors.txt file in the root of the source tree.
 CAppModule _Module;             // WTL's application module.
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int /*nCmdShow*/ = SW_SHOWDEFAULT)
-{ 
+{
 	int nRet = 0; // Return code
 	CErrorReportDlg dlgErrorReport; // Error Report dialog
 	CResendDlg dlgResend; // Resend dialog
@@ -32,24 +32,22 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int /*nCmdShow*/ = SW_SHOWDEFAULT)
 	// Get command line parameters.
 	LPCWSTR szCommandLine = GetCommandLineW();
 
-    // Split command line.
-    int argc = 0;
-    LPWSTR* argv = CommandLineToArgvW(szCommandLine, &argc);
+	// Split command line.
+	int argc = 0;
+	LPWSTR* argv = CommandLineToArgvW(szCommandLine, &argc);
 
-    // Check parameter count.
-    if(argc!=2)
-        return 1; // No arguments passed, exit.
+	// Check parameter count.
+	if(argc!=2)
+		return 1; // No arguments passed, exit.
 
-    if(argv[1][0] == '-') {
-        LPCWSTR str = _T("Unknown error");
-        if(argv[1][1] == '1')
-            str = _T("Graphics card drivers crashed during the initialization of OpenGL.\n\nThis usually means that your Catalyst installation is corrupted, please do a clean reinstall of your Catalyst drivers. See http://help.outerra.com for a list of other possible causes and solutions.");
-        else if(argv[1][1] == '2')
-            str = _T("Graphics card drivers crashed during the initialization of OpenGL.\n\nPlease see http://help.outerra.com for a list of possible causes and solutions.");
+	if(argv[1][0] == '-') {
+		LPCWSTR str = _T("Unknown error");
+		if(argv[1][1] == '1' || argv[1][1] == '2')
+			str = _T("Graphics card drivers crashed during the initialization of OpenGL.\n\nPlease see http://drivers.outerraworld.com for a list of possible causes and solutions.");
 
-        ::MessageBox(0, str, _T("Fatal Error"), MB_OK | MB_ICONEXCLAMATION);
-        return 0;
-    }
+		::MessageBox(0, str, _T("Fatal Error"), MB_OK | MB_ICONEXCLAMATION);
+		return 0;
+	}
 
 	if(_tcscmp(argv[1], _T("/terminate"))==0)
 	{
@@ -57,23 +55,32 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int /*nCmdShow*/ = SW_SHOWDEFAULT)
 		return CErrorReportSender::TerminateAllCrashSenderProcesses();
 	}
 
-	// Extract file mapping name from command line arg.    
-    CString sFileMappingName = CString(argv[1]);
-		
-	// Create the sender model that will collect crash report data 
+	// Extract file mapping name from command line arg.
+	CString sFileMappingName = CString(argv[1]);
+
+	// Create the sender model that will collect crash report data
 	// and send error report(s).
 	CErrorReportSender* pSender = CErrorReportSender::GetInstance();
 
 	// Init the sender object
 	BOOL bInit = pSender->Init(sFileMappingName.GetBuffer(0));
 	if(!bInit)
-    {
-		// Failed to init 
+	{
+		// Failed to init
 		delete pSender;
-        return 0;
-    }      
+		return 0;
+	}
 
-	// Determine what to do next 
+	CErrorReportInfo* cri = pSender->GetCrashInfo()->GetReport(0);
+	if (cri) {
+		if (cri->GetExceptionModule() == _T("atio6axx.dll"))
+			::MessageBox(0,
+				_T("This appears to be a graphics driver crash. You may want to update your graphics card drivers.\n\nPlease see http://drivers.outerraworld.com for a list of possible causes and solutions."),
+				_T("AMD driver crash"),
+				MB_OK | MB_ICONWARNING);
+	}
+
+	// Determine what to do next
 	// (either run in GUI more or run in silent mode).
 	if(!pSender->GetCrashInfo()->m_bSilentMode)
 	{
@@ -84,27 +91,27 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int /*nCmdShow*/ = SW_SHOWDEFAULT)
 
 		if(!pSender->GetCrashInfo()->m_bSendRecentReports)
 		{
-			// Create "Error Report" dialog			
+			// Create "Error Report" dialog
 			if(dlgErrorReport.Create(NULL) == NULL)
 			{
 				ATLTRACE(_T("Error report dialog creation failed!\n"));
 				delete pSender;
 				return 1;
-			}			
+			}
 		}
 		else
-		{        
-			// Create "Send Error Reports" dialog.					
+		{
+			// Create "Send Error Reports" dialog.
 			if(dlgResend.Create(NULL) == NULL)
 			{
 				ATLTRACE(_T("Resend dialog creation failed!\n"));
 				delete pSender;
 				return 1;
-			}			
+			}
 		}
 
 		// Process window messages.
-		nRet = theLoop.Run();	    
+		nRet = theLoop.Run();
 		_Module.RemoveMessageLoop();
 	}
 	else
@@ -116,35 +123,35 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int /*nCmdShow*/ = SW_SHOWDEFAULT)
 		// Get return status
 		nRet = pSender->GetStatus();
 	}
-    
+
 	// Delete sender object.
 	delete pSender;
 
 	// Exit.
-    return nRet;
+	return nRet;
 }
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
-{  
-    HRESULT hRes = ::CoInitialize(NULL);
-    // If you are running on NT 4.0 or higher you can use the following call instead to 
-    // make the EXE free threaded. This means that calls come in on a random RPC thread.
-    //	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
-    ATLASSERT(SUCCEEDED(hRes));
+{
+	HRESULT hRes = ::CoInitialize(NULL);
+	// If you are running on NT 4.0 or higher you can use the following call instead to
+	// make the EXE free threaded. This means that calls come in on a random RPC thread.
+	//	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	ATLASSERT(SUCCEEDED(hRes));
 
-    // this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
-    ::DefWindowProc(NULL, 0, 0, 0L);
+	// this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
+	::DefWindowProc(NULL, 0, 0, 0L);
 
-    AtlInitCommonControls(ICC_COOL_CLASSES | ICC_BAR_CLASSES);	// add flags to support other controls
+	AtlInitCommonControls(ICC_COOL_CLASSES | ICC_BAR_CLASSES);	// add flags to support other controls
 
-    hRes = _Module.Init(NULL, hInstance);
-    ATLASSERT(SUCCEEDED(hRes));
+	hRes = _Module.Init(NULL, hInstance);
+	ATLASSERT(SUCCEEDED(hRes));
 
-    int nRet = Run(lpstrCmdLine, nCmdShow);
+	int nRet = Run(lpstrCmdLine, nCmdShow);
 
-    _Module.Term();
-    ::CoUninitialize();
+	_Module.Term();
+	::CoUninitialize();
 
-    return nRet;
+	return nRet;
 }
 
